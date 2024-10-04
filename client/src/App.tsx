@@ -2,6 +2,7 @@ import { Toaster } from 'react-hot-toast'
 import './App.css'
 import VideoUploader from './component/VideoUploader'
 import { Card } from 'flowbite-react';
+import VideoPlayer from './component/VideoPlayer';
 
 function App() {
   return (
@@ -11,14 +12,17 @@ function App() {
         <h1 className="text-3xl font-extrabold text-zinc-800 dark:text-zinc-200">
           Stream your video !
         </h1>
-        <div className="flex w-full justify-center space-x-4 items-start mt-12 p-4">
+        <div className="flex flex-col md:flex-row  w-full justify-center gap-4 md:items-start mt-12 p-4">
           <Card>
-            <video
-              width={"500"}
-              src="http://localhost:8080/api/v1/videos/stream/range/af984380-d9b2-4798-9fbb-1773f71428c2"
+            <VideoPlayer src="http://localhost:8080/api/v1/videos/4e485889-ad47-474d-939e-39c03dc00c29/master.m3u8" />
+            {/* <video
+            style={{
+              width : "100%"
+            }}
+              src="http://localhost:8080/api/v1/videos/4e485889-ad47-474d-939e-39c03dc00c29/master.m3u8"
               controls
               autoPlay
-            ></video>
+            ></video> */}
           </Card>
           <VideoUploader />
         </div>

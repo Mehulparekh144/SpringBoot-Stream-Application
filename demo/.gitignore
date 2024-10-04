@@ -4,6 +4,7 @@ target/
 !**/src/main/**/target/
 !**/src/test/**/target/
 videos/
+videos_hls/
 
 ### STS ###
 .apt_generated

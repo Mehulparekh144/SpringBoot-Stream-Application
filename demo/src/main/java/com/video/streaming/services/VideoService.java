@@ -19,4 +19,7 @@ public interface VideoService {
   // get all videos
   Iterable<Video> getAll();
 
+  // video processing
+  String processVideo(String videoId);
+
 }

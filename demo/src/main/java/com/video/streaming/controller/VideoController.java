@@ -5,9 +5,10 @@ import com.video.streaming.entities.Video;
 import com.video.streaming.payload.CustomMessage;
 import com.video.streaming.services.VideoService;
 import lombok.AllArgsConstructor;
+import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.io.ByteArrayResource;
 import org.springframework.core.io.FileSystemResource;
-import org.springframework.core.io.InputStreamResource;
 import org.springframework.core.io.Resource;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
@@ -24,13 +25,16 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.UUID;
 
-@AllArgsConstructor
+@RequiredArgsConstructor
 @RestController
 @RequestMapping("/api/v1/videos")
 @CrossOrigin("*")
 public class VideoController {
 
   private VideoService videoService;
+
+  @Value("${file.video.hsl}")
+  private String HLS_DIR;
 
   @PostMapping
   public ResponseEntity<?> create(@RequestParam("file")MultipartFile file ,
@@ -158,6 +162,37 @@ public class VideoController {
   @GetMapping
   public Iterable<Video> getAll(){
     return videoService.getAll();
+  }
+
+  // Get server hls playlist master.m3u8
+  @GetMapping("/{videoId}/master.m3u8")
+  public ResponseEntity<Resource> getHlsMasterPlaylist(@PathVariable String videoId){
+    Path path = Paths.get(HLS_DIR , videoId , "master.m3u8");
+    if(!Files.exists(path)){
+      return ResponseEntity.notFound().build();
+    }
+
+    Resource resource = new FileSystemResource(path);
+
+    return ResponseEntity.ok()
+        .contentType(MediaType.parseMediaType("application/vnd.apple.mpegurl"))
+        .body(resource);
+  }
+
+  // Serve the segment
+  @GetMapping("/{videoId}/{segment}.ts")
+  public ResponseEntity<Resource> getHlsSegment(@PathVariable String videoId ,
+                                               @PathVariable String segment){
+    Path path = Paths.get(HLS_DIR , videoId , segment + ".ts");
+    if(!Files.exists(path)){
+      return ResponseEntity.notFound().build();
+    }
+
+    Resource resource = new FileSystemResource(path);
+
+    return ResponseEntity.ok()
+        .contentType(MediaType.parseMediaType("video/mp2t"))
+        .body(resource);
   }
 
 
